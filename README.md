@@ -45,7 +45,7 @@ sudo su
 
 Устанавливаем базовые программы для настройки
 ```
-apt install -y git ansible
+apt update; apt install -y git ansible
 ```
 
 И скачиваем скрипты для настройки
