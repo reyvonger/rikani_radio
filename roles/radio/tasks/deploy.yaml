@@ -8,16 +8,12 @@
   ansible.builtin.file:
     src: /home/{{ user }}/music
     dest: /root/music
-    owner: root
-    group: root
     state: link
 
 - name: Create a video link
   ansible.builtin.file:
     src: /home/{{ user }}/video
     dest: /root/video
-    owner: root
-    group: root
     state: link
 
 - name: edit bashrc
