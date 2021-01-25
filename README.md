@@ -4,6 +4,11 @@
 # Руководство по настройке youtube-радио
 Это не оригинальная разработка, а компиляция из других проектов, ссылки на них внизу
 
+
+## Помощь
+
+Если у вас возникли проблемы - можете задать вопросы в [telegram](https://t.me/joinchat/FYOaAF_8mp8pgDjf) или [discord](https://discord.com/invite/4CKq3JB) каналах [rikani](https://rikani.ru)
+
 ## Начало
 
 Для установки требуется:
@@ -84,6 +89,3 @@ ansible-playbook -i ~/rikani_radio/inventory.ini ~/rikani_radio/main.yaml -e use
 * **Sonya RIKANI** - *Идея* - [rikani.ru](https://rikani.ru)
 * **Vladimir Pankin** - *Реализация* - [pankin.org](https://pankin.org)
 
-## Помощь
-
-Если у вас возникли проблемы - можете задать вопросы в [telegram](https://t.me/joinchat/FYOaAF_8mp8pgDjf) или [discord](https://discord.com/invite/4CKq3JB) каналах [rikani](https://rikani.ru)
