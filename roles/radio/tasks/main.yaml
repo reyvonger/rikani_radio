@@ -1,0 +1,6 @@
+---
+- import_tasks: install.yaml
+
+- import_tasks: upgrade.yaml
+
+- import_tasks: deploy.yaml

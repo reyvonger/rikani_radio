@@ -1,0 +1,60 @@
+---
+- name: Creates deploy dir
+  file:
+    path: /tmp/deploy
+    state: directory
+
+- name: Create a music link
+  ansible.builtin.file:
+    src: /home/{{ user }}/music
+    dest: /root/music
+    owner: root
+    group: root
+    state: link
+
+- name: Create a video link
+  ansible.builtin.file:
+    src: /home/{{ user }}/video
+    dest: /root/video
+    owner: root
+    group: root
+    state: link
+
+- name: edit bashrc
+  lineinfile:
+    path: /root/.bashrc
+    regexp: '^alias next'
+    line: alias next='docker exec --tty mpd mpc next'
+    state: present
+
+- name: copy entrypoint.sh
+  copy:
+    src="entrypoint.sh"
+    dest=/tmp/deploy/entrypoint.sh
+    owner=root
+    group=root
+    mode=0755
+
+- name: template docker
+  template: 
+    src="docker-compose.yaml.j2" 
+    dest=/tmp/deploy/docker-compose.yaml
+    owner=root 
+    group=root 
+    mode=0644
+
+- name: deploy
+  docker_compose:
+    project_src: /tmp/deploy/
+    state: present
+    remove_orphans: yes
+   
+- name: update playlist
+  shell: cd /root/music/ && ls -1 *.mp3 > /var/lib/docker/volumes/deploy_mpd_playlists/_data/playlist.m3u
+  notify:
+   - restart ffmpeg
+
+- name: load playlist
+  shell: docker exec --tty mpd mpc repeat on && docker exec --tty mpd mpc random on && docker exec --tty mpd mpc clear && docker exec --tty mpd mpc update && docker exec --tty mpd mpc load playlist && docker exec --tty mpd mpc play
+  notify:
+   - restart ffmpeg

@@ -1,0 +1,44 @@
+version: '3'
+services:
+  ffmpeg:
+    image: jrottenberg/ffmpeg
+    restart: always
+    container_name: ffmpeg
+    entrypoint: /entrypoint.sh
+    depends_on:
+      - icecast
+    environment:
+      YT_TOKEN: {{ YT_TOKEN }}
+      RADIO_URL: {{ RADIO_URL }}
+    volumes:
+      - /root/video:/video
+      - ./entrypoint.sh:/entrypoint.sh
+    networks:
+    - radio-net
+
+  icecast:
+    image: vitiman/alpine-icecast:latest
+    restart: always
+    container_name: icecast
+    networks:
+    - radio-net
+
+  mpd:
+    image: vitiman/alpine-mpd:latest
+    restart: always
+    container_name: mpd
+    depends_on:
+      - icecast
+    volumes:
+      - /root/music:/var/lib/mpd/music
+      - mpd_playlists:/var/lib/mpd/playlists
+      - mpd_database:/var/lib/mpd/database
+    networks:
+    - radio-net
+
+volumes:
+  mpd_playlists: {}
+  mpd_database: {}
+
+networks:
+  radio-net: {}

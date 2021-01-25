@@ -1,0 +1,7 @@
+---
+- hosts: localhost
+  gather_facts: true
+  roles:
+    - radio
+  vars:
+    RADIO_URL: http://icecast:8000/mpd
