@@ -45,7 +45,7 @@ apt install -y git ansible
 
 И скачиваем скрипты для настройки
 ```
-cd ~ && git clone https://github.com/reyvonger/rikani_radio.git
+cd; git clone https://github.com/reyvonger/rikani_radio.git
 ```
 
 Теперь нам необходимо загрузить на сервер видео и аудио файлы, для этого используем [WinSCP](https://winscp.net/eng/download.php)
