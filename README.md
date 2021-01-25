@@ -40,12 +40,12 @@ sudo su
 
 Устанавливаем базовые программы для настройки
 ```
-apt install -y git ansible && cd 
+apt install -y git ansible
 ```
 
 И скачиваем скрипты для настройки
 ```
-git clone https://github.com/reyvonger/rikani_radio.git
+cd ~ && git clone https://github.com/reyvonger/rikani_radio.git
 ```
 
 Теперь нам необходимо загрузить на сервер видео и аудио файлы, для этого используем [WinSCP](https://winscp.net/eng/download.php)
@@ -69,6 +69,7 @@ git clone https://github.com/reyvonger/rikani_radio.git
 ansible-playbook -i ~/rikani_radio/inventory.ini ~/rikani_radio/main.yaml -e YT_TOKEN=e3gu-424p-fzj4-zha0-2v2b -e user=ubuntu
 ```
 
+* Перед выполнением этой команды необходимо выполнить **sudo su**
 * После выполнения этой команды начнётся стрим на вашем youtube аккаунте, если хотите добавить треки или поменять видео - просто поменяйте их и запустите последнюю команду снова. 
 * Поcле выполения скрипта музыка перезапускается
 
