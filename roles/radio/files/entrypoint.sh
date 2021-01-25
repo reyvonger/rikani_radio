@@ -13,4 +13,4 @@ ffmpeg \
     -map_metadata:g 1:g \
     -vcodec libx264 -pix_fmt yuv420p -preset $QUAL -r $FPS -g $(($FPS * 2)) -b:v $VBR \
     -acodec libmp3lame -ar 44100 -threads 6 -qscale:v 3 -b:a 320000 -bufsize 512k \
-    -f flv "$YOUTUBE_URL/$YT_TOKEN"
+    -f flv "$YOUTUBE_URL/$YT_TOKEN" > /dev/null 2>&1
