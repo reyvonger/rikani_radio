@@ -16,6 +16,12 @@
     dest: /root/video
     state: link
 
+- name: move video
+  shell: mv /root/video/video.mp4 /root/video/play.mp4
+  notify:
+   - restart ffmpeg
+  ignore_errors: yes
+
 - name: edit bashrc
   lineinfile:
     path: /root/.bashrc
