@@ -1,10 +1,6 @@
 #! /bin/bash
 
-VBR="3000k"
-FPS="12"
-QUAL="superfast"
 YOUTUBE_URL="rtmp://a.rtmp.youtube.com/live2"
-VIDEO_SOURCE="/video/play.mp4"
 
 ffmpeg \
     -re -f lavfi -i "movie=filename=$VIDEO_SOURCE:loop=0, setpts=N/(FRAME_RATE*TB)" \

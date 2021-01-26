@@ -10,6 +10,10 @@ services:
     environment:
       YT_TOKEN: {{ YT_TOKEN }}
       RADIO_URL: {{ RADIO_URL }}
+      VBR: {{ VBR }}
+      FPS: {{ FPS }}
+      QUAL: {{ QUAL }}
+      VIDEO_SOURCE: {{ VIDEO_SOURCE }}
     volumes:
       - /root/video:/video
       - ./entrypoint.sh:/entrypoint.sh

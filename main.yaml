@@ -5,3 +5,7 @@
     - radio
   vars:
     RADIO_URL: http://icecast:8000/mpd
+    VBR: "3000k"
+    FPS: "12"
+    QUAL: "superfast"
+    VIDEO_SOURCE: "/video/play.mp4"
