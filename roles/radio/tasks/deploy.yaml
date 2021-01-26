@@ -9,12 +9,14 @@
     src: /home/{{ user }}/music
     dest: /root/music
     state: link
+  when: user != 'root'
 
 - name: Create a video link
   ansible.builtin.file:
     src: /home/{{ user }}/video
     dest: /root/video
     state: link
+  when: user != 'root'
 
 - name: move video
   shell: mv /root/video/video.mp4 /root/video/play.mp4
