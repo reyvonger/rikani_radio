@@ -19,7 +19,7 @@
         
 - name: Add repository
   apt_repository:
-    repo: deb https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release | lower }} stable
+    repo: deb [arch={{ go_arch }}] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release | lower }} stable
     state: present
 
 - name: Install docker
