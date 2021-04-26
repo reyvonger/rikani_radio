@@ -1,7 +1,7 @@
 ---
 - name: Creates deploy dir
   file:
-    path: /tmp/deploy
+    path: /srv/deploy
     state: directory
 
 - name: Create a music link
@@ -34,7 +34,7 @@
 - name: copy entrypoint.sh
   copy:
     src="entrypoint.sh"
-    dest=/tmp/deploy/entrypoint.sh
+    dest=/srv/deploy/entrypoint.sh
     owner=root
     group=root
     mode=0755
@@ -42,14 +42,14 @@
 - name: template docker
   template: 
     src="docker-compose.yaml.j2" 
-    dest=/tmp/deploy/docker-compose.yaml
+    dest=/srv/deploy/docker-compose.yaml
     owner=root 
     group=root 
     mode=0644
 
 - name: deploy
   docker_compose:
-    project_src: /tmp/deploy/
+    project_src: /srv/deploy/
     state: present
     remove_orphans: yes
    
