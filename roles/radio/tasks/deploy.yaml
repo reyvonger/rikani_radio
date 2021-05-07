@@ -31,21 +31,29 @@
     line: alias next='docker exec --tty mpd mpc next'
     state: present
 
-- name: copy entrypoint.sh
+- name: template entrypoint.sh
+  template:
+    src: entrypoint.sh.j2
+    dest: /srv/deploy/entrypoint.sh
+    owner: root
+    group: root
+    mode: 0755
+
+- name: copy font
   copy:
-    src="entrypoint.sh"
-    dest=/srv/deploy/entrypoint.sh
-    owner=root
-    group=root
-    mode=0755
+    src: font.ttf
+    dest: /root/video/font.ttf
+    owner: root
+    group: root
+    mode: 0755
 
 - name: template docker
   template: 
-    src="docker-compose.yaml.j2" 
-    dest=/srv/deploy/docker-compose.yaml
-    owner=root 
-    group=root 
-    mode=0644
+    src: "docker-compose.yaml.j2" 
+    dest: /srv/deploy/docker-compose.yaml
+    owner: root 
+    group: root 
+    mode: 0644
 
 - name: deploy
   docker_compose:

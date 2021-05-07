@@ -9,3 +9,4 @@
     FPS: "12"
     QUAL: "superfast"
     VIDEO_SOURCE: "/video/play.mp4"
+    track_output: true
