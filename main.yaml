@@ -10,3 +10,9 @@
     QUAL: "superfast"
     VIDEO_SOURCE: "/video/play.mp4"
     track_output: true
+    fontcolor: white
+    fontsize: 24
+    boxcolor: black@0.5
+    boxborderw: 5
+    x: 0
+    y: 0

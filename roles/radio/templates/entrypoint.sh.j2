@@ -8,8 +8,8 @@ ffmpeg \
     -re -f lavfi -i "movie=filename=$VIDEO_SOURCE:loop=0, setpts=N/(FRAME_RATE*TB)" \
     -thread_queue_size 512 -i "$RADIO_URL" \
     -vf drawtext="fontfile=/video/font.ttf: \
-     textfile=/video/track.txt:reload=1: fontcolor=white: fontsize=24: box=0: boxcolor=black@0.5: \
-     boxborderw=5: x=(0): y=(0)" \
+     textfile=/video/track.txt:reload=1: fontcolor={{ fontcolor }}: fontsize={{ fontsize }}: box=0: boxcolor={{ boxcolor }}: \
+     boxborderw={{ boxborderw }}: x=({{ x }}): y=({{ y }})" \
     -map 0:v:0 -map 1:a:0 \
     -map_metadata:g 1:g \
     -vcodec libx264 -pix_fmt yuv420p -preset $QUAL -r $FPS -g $(($FPS * 2)) -b:v $VBR \
