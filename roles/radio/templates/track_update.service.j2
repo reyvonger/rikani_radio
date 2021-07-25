@@ -11,7 +11,7 @@ Group=root
 Type=simple
 RestartSec=10
 Restart=always
-ExecStart=/bin/bash -c "docker exec --tty mpd mpc current | grep -Po '.*(?=\.)' > /root/video/track.txt"
+ExecStart=/bin/bash -c "docker exec --tty mpd mpc current > /root/video/track.txt"
 
  [Install]
 WantedBy=multi-user.target
