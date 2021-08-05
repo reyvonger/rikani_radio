@@ -24,12 +24,20 @@
    - restart ffmpeg
   ignore_errors: yes
 
-- name: edit bashrc
+- name: create next alias
   lineinfile:
     path: /root/.bashrc
     regexp: '^alias next'
     line: alias next='docker exec --tty mpd mpc next'
     state: present
+
+- name: create prev alias
+  lineinfile:
+    path: /root/.bashrc
+    regexp: '^alias prev'
+    line: alias next='docker exec --tty mpd mpc prev'
+    state: present
+
 
 - name: template entrypoint.sh
   template:
