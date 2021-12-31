@@ -78,6 +78,25 @@ ansible-playbook -i ~/rikani_radio/inventory.ini ~/rikani_radio/main.yaml -e use
 * После выполнения этой команды начнётся стрим на вашем youtube аккаунте, если хотите добавить треки или поменять видео - просто поменяйте их и запустите последнюю команду снова. 
 * Поcле выполения скрипта музыка перезапускается
 
+
+## Настройка
+С помощью опции **-e key=value** можно изменять некоторые настройки.
+Ниже примеры значений по умолчанию:
+
+* -e VBR=10000k - битрейт
+* -e FPS=25 - кадры в секунду
+* -e QUAL=veryfast - качесво потока (поддерживается ultrafast, superfast, veryfast, faster, fast, medium, slow, slower, veryslow)
+* -e track_output: true - вывод названия трека на экран
+* -e fontcolor: "white" - цвет шрифта для вывода трека
+* -e fontsize: "24" - размер шрифта
+* -e boxcolor: "black@0.5" - цвет рамки с названием трека
+* -e boxborderw: "5" - размер рамки с названием трека
+* -e x: "0" - положение блока с названием трека по оси X
+* -e y: "0"- положение блока с названием трека по оси Y
+* -e youtube_protocol: "rtmp" - протокол стриминга на ютуб, поддерживаемые значения - rtmp, hls. рекомендуется использовать hls.
+
+
+
 ## Используемые проекты
 
 * [docker-music-stack](https://github.com/VITIMan/docker-music-stack/) - Victoriano Navarro
