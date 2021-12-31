@@ -6,7 +6,7 @@ services:
     container_name: ffmpeg
     entrypoint: /entrypoint.sh
     depends_on:
-      - icecast
+    - icecast
     environment:
       YT_TOKEN: {{ YT_TOKEN }}
       RADIO_URL: {{ RADIO_URL }}
@@ -14,9 +14,15 @@ services:
       FPS: {{ FPS }}
       QUAL: {{ QUAL }}
       VIDEO_SOURCE: {{ VIDEO_SOURCE }}
+      fontcolor: {{ fontcolor }}
+      fontsize: {{ fontsize }}
+      boxcolor: {{ boxcolor }}
+      boxborderw: {{ boxborderw }}
+      x: {{ x }}
+      y: {{ y }}
     volumes:
-      - /root/video:/video
-      - ./entrypoint.sh:/entrypoint.sh
+    - /root/video:/video
+    - ./entrypoint.sh:/entrypoint.sh
     networks:
     - radio-net
 
@@ -32,11 +38,11 @@ services:
     restart: always
     container_name: mpd
     depends_on:
-      - icecast
+    - icecast
     volumes:
-      - /root/music:/var/lib/mpd/music
-      - mpd_playlists:/var/lib/mpd/playlists
-      - mpd_database:/var/lib/mpd/database
+    - /root/music:/var/lib/mpd/music
+    - mpd_playlists:/var/lib/mpd/playlists
+    - mpd_database:/var/lib/mpd/database
     networks:
     - radio-net
 

@@ -18,26 +18,42 @@
     state: link
   when: user != 'root'
 
+- name: new video source
+  stat:
+    path: /root/video/video.mp4
+  register: stat_result
+
 - name: move video
   shell: mv /root/video/video.mp4 /root/video/play.mp4
+  when: stat_result.stat.exists
   notify:
-   - restart ffmpeg
-  ignore_errors: yes
+  - restart ffmpeg
 
-- name: create next alias
-  lineinfile:
+- name: create mpc alias
+  blockinfile:
     path: /root/.bashrc
-    regexp: '^alias next'
-    line: alias next='docker exec --tty mpd mpc next'
-    state: present
+    block: |
+      alias next='docker exec --tty mpd mpc next'
+      alias prev='docker exec --tty mpd mpc prev'
 
-- name: create prev alias
-  lineinfile:
-    path: /root/.bashrc
-    regexp: '^alias prev'
-    line: alias next='docker exec --tty mpd mpc prev'
-    state: present
+- name: Use sha256 to calculate checksum
+  ansible.builtin.stat:
+    path: /root/music/
+    checksum_algorithm: sha256
+  register: music_dir_ls
 
+- name: music dir sha256
+  set_fact: 
+    music_dir_sha256: "{{ music_dir_ls | hash('sha256') }}"
+
+- name: read music.sha256
+  slurp:
+    src: /root/music.sha256
+  register: slurped_user_data
+
+- name: Decode music.sha256 #(hack)
+  set_fact:
+    old_music_dir_sha256: "{{ slurped_user_data.content | b64decode }}"
 
 - name: template entrypoint.sh
   template:
@@ -72,9 +88,17 @@
 - name: update playlist
   shell: cd /root/music/ && ls -1 *.mp3 > /var/lib/docker/volumes/deploy_mpd_playlists/_data/playlist.m3u
   notify:
-   - restart ffmpeg
+  - restart ffmpeg
+  when: old_music_dir_sha256 != music_dir_sha256
 
 - name: load playlist
   shell: docker exec --tty mpd mpc repeat on && docker exec --tty mpd mpc random on && docker exec --tty mpd mpc clear && docker exec --tty mpd mpc update && docker exec --tty mpd mpc load playlist && docker exec --tty mpd mpc play
   notify:
-   - restart ffmpeg
+  - restart ffmpeg
+  when: old_music_dir_sha256 != music_dir_sha256
+
+- name: new sha256 output
+  local_action: 
+    module: copy 
+    content: "{{ music_dir_sha256 }}"
+    dest: /root/music.sha256

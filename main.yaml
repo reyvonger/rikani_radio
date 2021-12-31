@@ -2,17 +2,18 @@
 - hosts: localhost
   gather_facts: true
   roles:
-    - radio
+  - radio
   vars:
-    RADIO_URL: http://icecast:8000/mpd
-    VBR: "3000k"
-    FPS: "12"
-    QUAL: "superfast"
+    RADIO_URL: "http://icecast:8000/mpd"
+    VBR: "10000k"
+    FPS: "25"
+    QUAL: "veryfast"
     VIDEO_SOURCE: "/video/play.mp4"
+    fontcolor: "white"
+    fontsize: "24"
+    boxcolor: "black@0.5"
+    boxborderw: "5"
+    x: "0"
+    y: "0"
+    youtube_protocol: "rtmp"
     track_output: true
-    fontcolor: white
-    fontsize: 24
-    boxcolor: black@0.5
-    boxborderw: 5
-    x: 0
-    y: 0
