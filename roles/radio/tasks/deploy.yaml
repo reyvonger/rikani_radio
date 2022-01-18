@@ -4,6 +4,11 @@
     path: /srv/deploy
     state: directory
 
+- name: create music.sha256
+  file:
+    path: /root/music.sha256
+    state: touch
+
 - name: Create a music link
   ansible.builtin.file:
     src: /home/{{ user }}/music
