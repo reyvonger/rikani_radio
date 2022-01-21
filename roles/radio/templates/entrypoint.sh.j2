@@ -3,14 +3,14 @@
 ffmpeg \
     -re -f lavfi -i "movie=filename=$VIDEO_SOURCE:loop=0, setpts=N/(FRAME_RATE*TB)" \
     -thread_queue_size 512 -i "$RADIO_URL" \
-{% if track_output is sameas true %}
+{% if track_output == "true" %}
     -vf drawtext="fontfile=/video/font.ttf: \
      textfile=/video/track.txt:reload=1: fontcolor=$fontcolor: fontsize=$fontsize: box=0: boxcolor=$boxcolor: \
      boxborderw=5: x=($x): y=($y)" \
 {% endif %}
     -map 0:v:0 -map 1:a:0 \
     -map_metadata:g 1:g \
-    -vcodec libx264 -pix_fmt yuv420p -preset $QUAL -r $FPS -g $(($FPS * 2)) -b:v $VBR -crf 22 \
+    -vcodec libx264 -pix_fmt yuv420p -preset $QUAL -r $FPS -g $(($FPS * 2)) -b:v $VBR -crf $crf \
     -acodec libfdk_aac -profile:a aac_low -ar 44100 -threads 6 -qscale:v 3 -b:a 512k -bufsize 1024k \
 {% if youtube_protocol == "hls" %}
     -hls_time 2 -hls_list_size 4 -http_persistent 1 -method POST "https://a.upload.youtube.com/http_upload_hls?cid=$YT_TOKEN&copy=0&file=master.m3u8" -method POST "https://b.upload.youtube.com/http_upload_hls?cid=$YT_TOKEN&copy=1&file=master.m3u8" > /dev/null 2>&1

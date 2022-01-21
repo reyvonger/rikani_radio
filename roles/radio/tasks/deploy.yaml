@@ -4,10 +4,19 @@
     path: /srv/deploy
     state: directory
 
+- name: check music.sha256
+  stat:
+    path: /root/video/music.sha256
+  register: music
+
 - name: create music.sha256
   file:
     path: /root/music.sha256
     state: touch
+    owner: root
+    group: root
+    mode: 0755
+  when: music.stat.exists
 
 - name: Create a music link
   ansible.builtin.file:
@@ -26,11 +35,11 @@
 - name: new video source
   stat:
     path: /root/video/video.mp4
-  register: stat_result
+  register: video
 
 - name: move video
   shell: mv /root/video/video.mp4 /root/video/play.mp4
-  when: stat_result.stat.exists
+  when: video.stat.exists
   notify:
   - restart ffmpeg
 
@@ -67,6 +76,8 @@
     owner: root
     group: root
     mode: 0755
+  notify:
+  - restart ffmpeg
 
 - name: copy font
   copy:
