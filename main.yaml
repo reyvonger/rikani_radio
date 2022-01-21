@@ -8,6 +8,7 @@
     VBR: "10000k"
     FPS: "25"
     QUAL: "veryfast"
+    crf: "10"
     VIDEO_SOURCE: "/video/play.mp4"
     fontcolor: "white"
     fontsize: "24"
@@ -16,4 +17,4 @@
     x: "0"
     y: "0"
     youtube_protocol: "rtmp"
-    track_output: true
+    track_output: "true"
