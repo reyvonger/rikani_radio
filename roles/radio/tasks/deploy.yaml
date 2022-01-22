@@ -16,7 +16,7 @@
     owner: root
     group: root
     mode: 0755
-  when: music.stat.exists
+  when: not music.stat.exists
 
 - name: Create a music link
   ansible.builtin.file:
