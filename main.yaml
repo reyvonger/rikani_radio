@@ -8,7 +8,7 @@
     VBR: "10000k"
     FPS: "25"
     QUAL: "veryfast"
-    crf: "10"
+    crf: "25"
     VIDEO_SOURCE: "/video/play.mp4"
     fontcolor: "white"
     fontsize: "24"

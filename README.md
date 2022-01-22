@@ -87,6 +87,7 @@ cd ~/rikani_radio && ansible-playbook -i inventory.ini main.yaml -e user=ubuntu 
 * -e VBR=10000k - битрейт
 * -e FPS=25 - кадры в секунду
 * -e QUAL=veryfast - качесво потока (поддерживается ultrafast, superfast, veryfast, faster, fast, medium, slow, slower, veryslow)
+* -e crf=25 - от 0 до 51, диапазон сжатия где 51 наихудшее качество, а 0 без потерь. 25 оптимальное значение. подробнее [в документации ffmpeg](https://trac.ffmpeg.org/wiki/Encode/H.264)
 * -e track_output=true - вывод названия трека на экран
 * -e fontcolor=white - цвет шрифта для вывода трека
 * -e fontsize=24 - размер шрифта
