@@ -18,3 +18,4 @@
     y: "0"
     youtube_protocol: "rtmp"
     track_output: "true"
+    user: "root"
