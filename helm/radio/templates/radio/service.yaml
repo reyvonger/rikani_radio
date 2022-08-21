@@ -1,0 +1,16 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ $.Release.Name }}-radio-svc
+  labels:
+    {{- template "radio.labels" . }}
+    app: {{ $.Release.Name }}-radio-svc
+spec:
+  type: "ClusterIP"
+  ports:
+  - name: 8080tcp
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: {{ $.Release.Name }}-radio

@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  labels:
+    {{- template "radio.labels" . }}
+    app: {{ $.Release.Name }}-radio-ingress
+  name: {{ $.Release.Name }}-radio-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: "{{ .Release.Name }}-radio-auth"
+    nginx.ingress.kubernetes.io/auth-realm: "Enter your credentials"
+    nginx.ingress.kubernetes.io/auth-secret-type: "auth-map"
+spec:
+  tls:
+  - hosts:
+    - {{ $.Values.settings.domain }}
+    secretName: {{ $.Release.Name }}-tls
+  rules:
+    - host: {{ $.Values.settings.domain }}
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ $.Release.Name }}-radio-svc
+              port:
+                number: 8080
