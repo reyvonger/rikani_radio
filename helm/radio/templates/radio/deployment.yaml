@@ -1,0 +1,163 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $.Release.Name }}-radio-deployment
+  labels:
+    {{- template "radio.labels" . }}
+    app: {{ $.Release.Name }}-radio
+spec:
+  selector:
+    matchLabels:
+      app: {{ $.Release.Name }}-radio
+  template:
+    metadata:
+      annotations:
+  {{- if $.Values.ffmpeg.env }}
+        checksum/ffmpeg-env: {{ print $.Values.ffmpeg.env | sha256sum }}
+  {{- end }}
+  {{- if $.Values.ffmpeg.secrets }}
+        checksum/ffmpeg-secrets: {{ print $.Values.ffmpeg.secrets | sha256sum }}
+  {{- end }}
+  {{- if $.Values.ffmpeg.entrypoint }}
+        checksum/ffmpeg-entrypoint: {{ print $.Values.ffmpeg.entrypoint | sha256sum }}
+  {{- end }}
+  {{- if $.Values.aws.entrypoint }}
+        checksum/aws-entrypoint: {{ print $.Values.aws.entrypoint | sha256sum }}
+  {{- end }}
+  {{- if $.Values.mpd.entrypoint }}
+        checksum/mpd-entrypoint: {{ print $.Values.mpd.entrypoint | sha256sum }}
+  {{- end }}
+      labels:
+        app: {{ $.Release.Name }}-radio
+    spec:
+      securityContext:
+        #runAsUser: 33
+        #runAsGroup: 33
+        fsGroup: 33
+      hostAliases:
+      - ip: 127.0.0.1
+        hostnames:
+        - icecast
+        - mpd
+      containers:
+      - name: ffmpeg-a
+        image: jrottenberg/ffmpeg:4.1-ubuntu
+        imagePullPolicy: IfNotPresent
+        command: [ "bash", "/entrypoint" ]
+        env:
+        - name: YT_DOMAIN
+          value: a.upload.youtube.com
+  {{- range $key, $val := $.Values.ffmpeg.env }}
+        - name: {{ $key }}
+          valueFrom:
+            configMapKeyRef:
+              name: {{ $.Release.Name }}-radio-config
+              key: {{ $key }}
+  {{- end }}
+{{- if $.Values.ffmpeg.secrets }}
+  {{- range $key, $val := $.Values.ffmpeg.secrets }}
+        - name: {{ $key }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ $.Release.Name }}-radio-secret
+              key: {{ $key }}
+  {{- end }}
+{{- end }}
+        startupProbe:
+          exec:
+            command:
+            - cat
+            - /tmp/healthy
+          failureThreshold: 90
+          periodSeconds: 10
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        - name: entrypoint-ffmpeg
+          mountPath: /entrypoint
+          subPath: entrypoint.ffmpeg
+          readOnly: true
+      - name: icecast
+        image: vitiman/alpine-icecast:latest
+        imagePullPolicy: IfNotPresent
+        # command: [ "sh", "/entrypoint" ]
+        ports:
+        - containerPort: 8000
+      - name: ympd
+        image: vitiman/alpine-ympd:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+      - name: mpd
+        image: vitiman/alpine-mpd:latest
+        imagePullPolicy: IfNotPresent
+        command: [ "sh", "/entrypoint" ]
+        ports:
+        - containerPort: 6600
+        startupProbe:
+          exec:
+            command:
+            - cat
+            - /var/lib/mpd/music/track.txt
+          failureThreshold: 90
+          periodSeconds: 10
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/mpd/music
+        - name: entrypoint-mpd
+          mountPath: /entrypoint
+          subPath: entrypoint.mpd
+          readOnly: true
+      initContainers:
+      - name: download
+        image: amazon/aws-cli:latest
+        imagePullPolicy: IfNotPresent
+        command: [ "sh", "/entrypoint" ]
+        env:
+  {{- range $key, $val := $.Values.ffmpeg.env }}
+        - name: {{ $key }}
+          valueFrom:
+            configMapKeyRef:
+              name: {{ $.Release.Name }}-radio-config
+              key: {{ $key }}
+  {{- end }}
+{{- if $.Values.ffmpeg.secrets }}
+  {{- range $key, $val := $.Values.ffmpeg.secrets }}
+        - name: {{ $key }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ $.Release.Name }}-radio-secret
+              key: {{ $key }}
+  {{- end }}
+{{- end }}
+        volumeMounts:
+        - name: data
+          mountPath: /aws/data
+        - name: entrypoint-aws
+          mountPath: /entrypoint
+          subPath: entrypoint.aws
+          readOnly: true
+      volumes:
+      - name: data
+        emptyDir: {}
+      - name: entrypoint-ffmpeg
+        configMap:
+          name: {{ $.Release.Name }}-radio-config
+          optional: true
+          items:
+          - key: entrypoint.ffmpeg
+            path: entrypoint.ffmpeg
+      - name: entrypoint-aws
+        configMap:
+          name: {{ $.Release.Name }}-radio-config
+          optional: true
+          items:
+          - key: entrypoint.aws
+            path: entrypoint.aws
+      - name: entrypoint-mpd
+        configMap:
+          name: {{ $.Release.Name }}-radio-config
+          optional: true
+          items:
+          - key: entrypoint.mpd
+            path: entrypoint.mpd

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-radio-config
+  labels:
+    {{- template "radio.labels" . }}
+data:
+  {{- range $key, $val := .Values.ffmpeg.env }}
+  {{ $key }}: {{ tpl $val $ | quote }}
+  {{- end }}
+  entrypoint.ffmpeg: |
+{{ .Values.ffmpeg.entrypoint | indent 4 }}
+  entrypoint.mpd: |
+{{ .Values.mpd.entrypoint | indent 4 }}
+  entrypoint.aws: |
+{{ .Values.aws.entrypoint | indent 4 }}

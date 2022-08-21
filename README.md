@@ -1,3 +1,5 @@
+
+Read this in other languages: [English](https://github.com/reyvonger/rikani_radio/blob/master/international/english.md)
 # Что это?
 Это гайд и скрипты для запуска аналога lofi radio на своём сервере, которое будет работать независимо от вашего компьютера :)
 
