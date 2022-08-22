@@ -1,7 +1,7 @@
 version: '3'
 services:
   ffmpeg:
-    image: jrottenberg/ffmpeg
+    image: jrottenberg/ffmpeg:4.1-ubuntu
     restart: always
     container_name: ffmpeg
     entrypoint: /entrypoint.ffmpeg.sh
