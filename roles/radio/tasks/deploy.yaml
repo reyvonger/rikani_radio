@@ -69,10 +69,20 @@
   set_fact:
     old_music_dir_sha256: "{{ slurped_user_data.content | b64decode }}"
 
-- name: template entrypoint.sh
+- name: template ffmpeg entrypoint.sh
   template:
-    src: entrypoint.sh.j2
-    dest: /srv/deploy/entrypoint.sh
+    src: entrypoint.ffmpeg.sh.j2
+    dest: /srv/deploy/entrypoint.ffmpeg.sh
+    owner: root
+    group: root
+    mode: 0755
+  notify:
+  - restart ffmpeg
+
+- name: template mpd entrypoint.sh
+  template:
+    src: entrypoint.mpd.sh.j2
+    dest: /srv/deploy/entrypoint.mpd.sh
     owner: root
     group: root
     mode: 0755

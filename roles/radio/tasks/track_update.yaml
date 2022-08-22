@@ -1,13 +1,7 @@
-- name: template systemd unit
-  template:
-    src: track_update.service.j2
-    dest: /etc/systemd/system/track_update.service
-  notify:
-   - daemon_reload track_update
-
-- name: enable track_update
-  service:
-    name: track_update
-    state: started
+#deprecated service
+- name: disable track_update.service
+  ansible.builtin.service:
+    name: track_update.service
+    state: stopped
     daemon_reload: true
-    enabled: true
+    enabled: false

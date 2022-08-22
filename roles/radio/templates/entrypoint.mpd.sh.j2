@@ -1,0 +1,20 @@
+mpd --stdout --no-daemon &
+while ! nc -z localhost 6600; do   
+  sleep 1
+done
+mpc repeat on
+mpc random on
+mv /var/lib/mpd/music/**/*.mp3 /var/lib/mpd/music/
+cd /var/lib/mpd/music/
+ls -1 *.mp3 > /var/lib/mpd/playlists/playlist.m3u
+sleep 1
+mpc update
+sleep 1
+mpc load playlist
+sleep 1
+mpc play
+while :
+do
+  mpc current | sed 's/\.mp3//' > /var/lib/mpd/music/track.txt
+  sleep 5
+done

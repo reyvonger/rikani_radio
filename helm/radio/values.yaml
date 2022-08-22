@@ -46,7 +46,7 @@ ffmpeg:
 
 mpd:
   entrypoint: |
-    #!/usr/bin/env bash
+    #!/usr/bin/env sh
     mpd --stdout --no-daemon &
     while ! nc -z localhost 6600; do   
       sleep 1
