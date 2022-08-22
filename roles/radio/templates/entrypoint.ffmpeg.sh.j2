@@ -12,7 +12,7 @@ ffmpeg \
 {% endif %}
   -map 0:v:0 -map 1:a:0 \
   -map_metadata:g 1:g \
-  -pix_fmt yuv420p -preset $QUAL -r $FPS -g $(($FPS * 2)) -b:v $VBR -crf $CRF \
+  -pix_fmt yuv420p -preset $QUAL -r $FPS -g $(($FPS * 2)) -b:v $VBR -crf $crf \
   -acodec libfdk_aac -profile:a aac_he_v2 -ar 44100 -threads 6 -qscale:v 3 -b:a 512k -bufsize 2048k \
 {% if youtube_protocol == "hls" %}
   -hls_time 2 -hls_list_size 4 -http_persistent 1 -method POST "https://a.upload.youtube.com/http_upload_hls?cid=$YT_TOKEN&copy=0&file=master.m3u8"
