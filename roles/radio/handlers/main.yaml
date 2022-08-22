@@ -2,12 +2,5 @@
 - name: restart ffmpeg
   shell: docker restart ffmpeg
 
-- name: daemon_reload track_update
-  service:
-    name: track_update
-    daemon_reload: true
-
-- name: restart track_update
-  service:
-    name: track_update
-    state: restarted
+- name: restart mpd
+  shell: docker restart mpd

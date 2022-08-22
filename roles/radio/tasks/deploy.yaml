@@ -111,17 +111,11 @@
     state: present
     remove_orphans: yes
    
-- name: update playlist
-  shell: cd /root/music/ && ls -1 *.mp3 > /var/lib/docker/volumes/deploy_mpd_playlists/_data/playlist.m3u
+- name: restart mpd
+  shell: docker restart mpd
+  when: old_music_dir_sha256 != music_dir_sha256
   notify:
   - restart ffmpeg
-  when: old_music_dir_sha256 != music_dir_sha256
-
-- name: load playlist
-  shell: docker exec --tty mpd mpc repeat on && docker exec --tty mpd mpc random on && docker exec --tty mpd mpc clear && docker exec --tty mpd mpc update && docker exec --tty mpd mpc load playlist && docker exec --tty mpd mpc play
-  notify:
-  - restart ffmpeg
-  when: old_music_dir_sha256 != music_dir_sha256
 
 - name: new sha256 output
   local_action: 
