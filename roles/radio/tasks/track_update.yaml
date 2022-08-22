@@ -1,10 +1,7 @@
-- name: Populate service facts
-  service_facts:
-
+#deprecated service
 - name: disable track_update.service
   ansible.builtin.service:
     name: track_update.service
     state: stopped
     daemon_reload: true
     enabled: false
-  when: "'track_update.service' in services"
