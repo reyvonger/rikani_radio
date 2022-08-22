@@ -23,7 +23,7 @@ services:
       FFMPEG_Y: {{ FFMPEG_Y }}
     volumes:
     - /root/video:/video
-    - /root/music:/music
+    - /root/music:/data
     - ./entrypoint.ffmpeg.sh:/entrypoint.ffmpeg.sh
     networks:
     - radio-net

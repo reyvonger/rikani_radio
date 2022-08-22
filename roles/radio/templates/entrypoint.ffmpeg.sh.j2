@@ -7,7 +7,7 @@ ffmpeg \
     -thread_queue_size 512 -i "$RADIO_URL" \
 {% if track_output == "true" %}
     -vf drawtext="fontfile=/video/font.ttf: \
-     textfile=/music/track.txt:reload=1: fontcolor=$fontcolor: fontsize=$fontsize: box=0: boxcolor=$boxcolor: \
+     textfile=/data/track.txt:reload=1: fontcolor=$fontcolor: fontsize=$fontsize: box=0: boxcolor=$boxcolor: \
      boxborderw=$boxborderw: x=($FFMPEG_X): y=($FFMPEG_Y)" \
 {% endif %}
     -map 0:v:0 -map 1:a:0 \
