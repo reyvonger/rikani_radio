@@ -1,5 +1,6 @@
-while ! cat /data/track.txt; do   
-    sleep 1
+#!/usr/bin/env bash
+while ! cat /data/track.txt; do
+  sleep 1
 done
 ffmpeg \
   -re -f lavfi -i "movie=filename=$VIDEO_SOURCE:loop=0, setpts=N/(FRAME_RATE*TB)" \
