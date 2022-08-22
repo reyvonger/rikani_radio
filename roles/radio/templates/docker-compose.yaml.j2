@@ -4,7 +4,7 @@ services:
     image: jrottenberg/ffmpeg
     restart: always
     container_name: ffmpeg
-    entrypoint: /entrypoint.sh
+    entrypoint: /entrypoint.ffmpeg.sh
     depends_on:
     - icecast
     environment:
@@ -19,11 +19,12 @@ services:
       fontsize: {{ fontsize }}
       boxcolor: {{ boxcolor }}
       boxborderw: {{ boxborderw }}
-      x: {{ x }}
-      y: {{ y }}
+      FFMPEG_X: {{ FFMPEG_X }}
+      FFMPEG_Y: {{ FFMPEG_Y }}
     volumes:
     - /root/video:/video
-    - ./entrypoint.sh:/entrypoint.sh
+    - /root/music:/music
+    - ./entrypoint.ffmpeg.sh:/entrypoint.ffmpeg.sh
     networks:
     - radio-net
 
@@ -38,12 +39,14 @@ services:
     image: vitiman/alpine-mpd:latest
     restart: always
     container_name: mpd
+    entrypoint: /entrypoint.mpd.sh
     depends_on:
     - icecast
     volumes:
     - /root/music:/var/lib/mpd/music
     - mpd_playlists:/var/lib/mpd/playlists
     - mpd_database:/var/lib/mpd/database
+    - ./entrypoint.mpd.sh:/entrypoint.mpd.sh
     networks:
     - radio-net
 

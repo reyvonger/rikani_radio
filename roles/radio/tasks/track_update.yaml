@@ -1,13 +1,11 @@
-- name: template systemd unit
-  template:
-    src: track_update.service.j2
-    dest: /etc/systemd/system/track_update.service
-  notify:
-   - daemon_reload track_update
+- debug:
+    msg: Docker installed!
+  when: "'docker' in services"
 
-- name: enable track_update
-  service:
+- name: disable track_update
+  ansible.builtin.service:
     name: track_update
-    state: started
+    state: stopped
     daemon_reload: true
-    enabled: true
+    enabled: false
+  when: "'track_update' in services"
