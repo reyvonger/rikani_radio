@@ -4,7 +4,7 @@ services:
     image: jrottenberg/ffmpeg:4.1-ubuntu
     restart: always
     container_name: ffmpeg
-    entrypoint: /entrypoint.ffmpeg.sh
+    entrypoint: [ "bash", "/entrypoint.ffmpeg.sh" ]
     depends_on:
     - icecast
     environment:
@@ -39,7 +39,7 @@ services:
     image: vitiman/alpine-mpd:latest
     restart: always
     container_name: mpd
-    entrypoint: /entrypoint.mpd.sh
+    entrypoint: [ "sh", "/entrypoint.mpd.sh" ]
     depends_on:
     - icecast
     volumes:
