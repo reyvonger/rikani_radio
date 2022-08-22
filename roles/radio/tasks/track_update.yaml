@@ -1,6 +1,5 @@
 - debug:
     msg: Docker installed!
-  when: "'docker' in services"
 
 - name: disable track_update
   ansible.builtin.service:
