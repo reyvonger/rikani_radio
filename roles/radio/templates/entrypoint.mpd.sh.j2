@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 mpd --stdout --no-daemon &
 while ! nc -z localhost 6600; do   
-	sleep 1
+  sleep 1
 done
 mpc repeat on
 mpc random on
@@ -16,6 +16,6 @@ sleep 1
 mpc play
 while :
 do
-	mpc current | sed 's/\.mp3//' > /var/lib/mpd/music/track.txt
-	sleep 5
+  mpc current | sed 's/\.mp3//' > /var/lib/mpd/music/track.txt
+  sleep 5
 done
