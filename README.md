@@ -9,7 +9,9 @@ Read this in other languages: [English](https://github.com/reyvonger/rikani_radi
 ⚡️⚡️⚡️
 Обратите внимание: изменились пути хранения треков и видео
 /root/video > /root/radio_runtime
+
 /root/music > /root/radio_runtime/music
+
 переместите файлы, если у вас сломалось
 ⚡️⚡️⚡️
 ## Помощь
