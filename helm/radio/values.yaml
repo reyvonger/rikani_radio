@@ -5,55 +5,39 @@ settings:
 auth:
   user: ""
 
-ffmpeg:
+config:
   env:
-    YT_TOKEN: ""
     RADIO_URL: "http://icecast:8000/mpd"
-    VBR: "1000k"
-    FPS: "25"
-    QUAL: "veryfast"
-    CRF: "25"
-    VIDEO_SOURCE: "/data/video.mp4"
-    FONTCOLOR: "white"
+    VBR: "4500k"
+    VIDEO_SOURCE: "video.mp4"
     FONTSIZE: "48"
-    BOXCOLOR: "black@0.5"
-    BOXBORDERW: "5"
-    FFMPEG_X: "0"
-    FFMPEG_Y: "0"
-    AWS_ENDPOINT: "https://storage.googleapis.com"
+  secrets:
+    YT_TOKEN: ""
+    AWS_ENDPOINT: ""
     AWS_DEFAULT_REGION: ""
     AWS_ACCESS_KEY_ID: ""
     AWS_SECRET_ACCESS_KEY: ""
     BUCKET: ""
 
+aws:
   entrypoint: |
-    #!/usr/bin/env bash
-    while ! cat /data/track.txt; do   
-      sleep 1
-    done
-    echo kek > /tmp/healthy
-    ffmpeg \
-      -re -f lavfi -i "movie=filename=$VIDEO_SOURCE:loop=0, setpts=N/(FRAME_RATE*TB)" \
-      -thread_queue_size 2048 -i "$RADIO_URL" \
-      -vf drawtext="fontfile=/data/font.ttf: \
-      textfile=/data/track.txt:reload=1: fontcolor=$FONTCOLOR: fontsize=$FONTSIZE: box=0: boxcolor=$BOXCOLOR: \
-      boxborderw=$BOXBORDERW: x=($FFMPEG_X): y=($FFMPEG_Y)" \
-      -map 0:v:0 -map 1:a:0 \
-      -map_metadata:g 1:g \
-      -pix_fmt yuv420p -preset $QUAL -r $FPS -g $(($FPS * 2)) -b:v $VBR -crf $CRF \
-      -acodec libfdk_aac -profile:a aac_he_v2 -ar 44100 -threads 6 -qscale:v 3 -b:a 512k -bufsize 2048k \
-      -hls_time 2 -hls_list_size 4 -http_persistent 1 -method POST "https://$YT_DOMAIN/http_upload_hls?cid=$YT_TOKEN&copy=0&file=master.m3u8"
+    echo "[default]" > /aws/credentials
+    echo "region = ${AWS_DEFAULT_REGION}" >> /aws/credentials
+    echo "aws_access_key_id = ${AWS_ACCESS_KEY_ID}" >> /aws/credentials
+    echo "aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}" >> /aws/credentials
+    aws --endpoint-url="$AWS_ENDPOINT" s3 cp s3://${BUCKET}/ /aws/data/ --recursive
+    # mv /aws/data/**/*.mp3 /aws/data/music/
+    cd /aws/data/music/
+    # chmod 777 -R /aws/data/music/
 
 mpd:
   entrypoint: |
-    #!/usr/bin/env sh
     mpd --stdout --no-daemon &
     while ! nc -z localhost 6600; do   
       sleep 1
     done
     mpc repeat on
     mpc random on
-    mv /var/lib/mpd/music/**/*.mp3 /var/lib/mpd/music/
     cd /var/lib/mpd/music/
     ls -1 *.mp3 > /var/lib/mpd/playlists/playlist.m3u
     sleep 1
@@ -68,11 +52,39 @@ mpd:
       sleep 5
     done
 
-aws:
+liquidsoap:
   entrypoint: |
-    echo "[default]" > /aws/credentials
-    echo "region = ${AWS_DEFAULT_REGION}" >> /aws/credentials
-    echo "aws_access_key_id = ${AWS_ACCESS_KEY_ID}" >> /aws/credentials
-    echo "aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}" >> /aws/credentials
-    aws --endpoint-url="$AWS_ENDPOINT" s3 cp s3://$BUCKET/ /aws/data/ --recursive
-    chmod 777 -R /aws/data/
+    #!/usr/bin/liquidsoap
+    log.file.path.set("/tmp/basic-radio.log")
+    settings.log.stdout.set(true)
+    settings.tag.encodings.set(["UTF-8", "ISO-8859-1"])
+    video.frame.height.set(1080)
+    video.frame.width.set(1920)
+
+    source_audio = input.http("{{ .Values.config.env.RADIO_URL }}")
+    source_video = single("/data/{{ .Values.config.env.VIDEO_SOURCE }}")
+    source_mux = mux_video(video=source_video,source_audio)
+
+    srightnow = ref("")
+    def update_time()
+        srightnow := process.read("cat /data/music/track.txt")
+    end
+    thread.run(every=1.,update_time)
+    def gettime() = !srightnow end
+
+    stream = video.add_text(font="/data/font.ttf", size={{ .Values.config.env.FONTSIZE }}, y=0, gettime, source_mux)
+    stream = video.resize(height=1080, width=1920, stream)
+
+    stream = ffmpeg.encode.audio_video(
+        %ffmpeg(
+            %audio(codec="aac", b="128k", flags="+global_header"),
+            %video(codec="libx264", b="{{ .Values.config.env.VBR }}", flags="+global_header")
+        ),
+        stream
+    )
+    flv = %ffmpeg(
+        format="flv",
+        %audio.copy,
+        %video.copy,
+    )
+    output.youtube.live.rtmp(encoder=flv, fallible=true, key="{{ .Values.config.secrets.YT_TOKEN }}", stream)

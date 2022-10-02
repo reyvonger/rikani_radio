@@ -1,7 +1,0 @@
-#deprecated service
-- name: disable track_update.service
-  ansible.builtin.service:
-    name: track_update.service
-    state: stopped
-    daemon_reload: true
-    enabled: false

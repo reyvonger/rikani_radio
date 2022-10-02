@@ -1,6 +1,6 @@
 ---
-- name: restart ffmpeg
-  shell: docker restart ffmpeg
+- name: restart liquidsoap
+  shell: docker restart liquidsoap
 
 - name: restart mpd
   shell: docker restart mpd

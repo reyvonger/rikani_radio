@@ -45,7 +45,7 @@ sudo su
 
 Installing basic programs for customization
 ```
-apt update; apt install -y git ansible
+add-apt-repository ppa:ansible/ansible --yes; apt update; apt install -y git ansible
 ```
 
 And download scripts for configuration

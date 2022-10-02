@@ -1,5 +1,5 @@
 ---
-- hosts: localhost
+- hosts: radio
   gather_facts: true
   roles:
   - radio
@@ -9,7 +9,7 @@
     FPS: "25"
     QUAL: "veryfast"
     CRF: "25"
-    VIDEO_SOURCE: "/video/play.mp4"
+    VIDEO_SOURCE: "play.mp4"
     fontcolor: "white"
     fontsize: "24"
     boxcolor: "black@0.5"

@@ -3,6 +3,4 @@
 
 - import_tasks: upgrade.yaml
 
-- import_tasks: track_update.yaml
-
 - import_tasks: deploy.yaml
