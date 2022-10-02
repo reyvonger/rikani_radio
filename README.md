@@ -7,12 +7,15 @@ Read this in other languages: [English](https://github.com/reyvonger/rikani_radi
 Это не оригинальная разработка, а компиляция из других проектов, ссылки на них внизу
 
 ⚡️⚡️⚡️
+
 Обратите внимание: изменились пути хранения треков и видео
+
 /root/video > /root/radio_runtime
 
 /root/music > /root/radio_runtime/music
 
 переместите файлы, если у вас сломалось
+
 ⚡️⚡️⚡️
 ## Помощь
 
