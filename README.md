@@ -6,10 +6,15 @@ Read this in other languages: [English](https://github.com/reyvonger/rikani_radi
 # Руководство по настройке youtube-радио
 Это не оригинальная разработка, а компиляция из других проектов, ссылки на них внизу
 
-
+⚡️⚡️⚡️
+Обратите внимание: изменились пути хранения треков и видео
+/root/video > /root/radio_runtime
+/root/music > /root/radio_runtime/music
+переместите файлы, если у вас сломалось
+⚡️⚡️⚡️
 ## Помощь
 
-Если у вас возникли проблемы - можете задать вопросы в [telegram](https://t.me/joinchat/FYOaAF_8mp8pgDjf) или [discord](https://discord.com/invite/4CKq3JB) каналах [rikani](https://rikani.ru)
+Если у вас возникли проблемы - можете задать вопросы в [telegram](https://t.me/rikaniburg) или [discord](https://discord.com/invite/4CKq3JB) каналах [rikani](https://rikani.ru)
 
 ## Начало
 
@@ -47,12 +52,13 @@ sudo su
 
 Устанавливаем базовые программы для настройки
 ```
-apt update; apt install -y git ansible
+add-apt-repository ppa:ansible/ansible --yes; apt update; apt install -y git ansible
 ```
 
 И скачиваем скрипты для настройки
 ```
 cd; git clone https://github.com/reyvonger/rikani_radio.git
+mkdir -p /root/radio_runtime/music
 ```
 
 Теперь нам необходимо загрузить на сервер видео и аудио файлы, для этого используем [WinSCP](https://winscp.net/eng/download.php)
@@ -61,9 +67,9 @@ cd; git clone https://github.com/reyvonger/rikani_radio.git
 
 ![screen03](https://rikani.ru/files/scp01.png)
 
-* Видео должно называться **video.mp4** и лежать в папке video. да, video.mp4 в папке video :)
+* Видео должно называться **video.mp4** (изменить можно через аргументы) и лежать в папке /root/radio_runtime/
 * Музыка должна быть в формате **mp3** и не должна начинаться на спецсимволы вроде:  % - " @ и подобных
-* Класть нужно в каталоге /home/%USERNAME%/ в папки music и video. USERNAME скорее всего будет - ubuntu (пример: /home/ubuntu/music), но оно может отличаться.
+* Треки должны лежать /root/radio_runtime/music/
 
 
 ![screen04](https://rikani.ru/files/scp02.png)
