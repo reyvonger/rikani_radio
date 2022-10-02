@@ -5,12 +5,12 @@ metadata:
   labels:
     {{- template "radio.labels" . }}
 data:
-  {{- range $key, $val := .Values.ffmpeg.env }}
+  {{- range $key, $val := .Values.config.env }}
   {{ $key }}: {{ tpl $val $ | quote }}
   {{- end }}
-  entrypoint.ffmpeg: |
-{{ .Values.ffmpeg.entrypoint | indent 4 }}
-  entrypoint.mpd: |
-{{ .Values.mpd.entrypoint | indent 4 }}
   entrypoint.aws: |
 {{ .Values.aws.entrypoint | indent 4 }}
+  entrypoint.mpd: |
+{{ .Values.mpd.entrypoint | indent 4 }}
+  entrypoint.liq: |
+{{ tpl .Values.liquidsoap.entrypoint $ | indent 4 }}

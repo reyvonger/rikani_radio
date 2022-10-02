@@ -4,7 +4,6 @@ while ! nc -z localhost 6600; do
 done
 mpc repeat on
 mpc random on
-mv /var/lib/mpd/music/**/*.mp3 /var/lib/mpd/music/
 cd /var/lib/mpd/music/
 ls -1 *.mp3 > /var/lib/mpd/playlists/playlist.m3u
 sleep 1

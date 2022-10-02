@@ -1,30 +1,22 @@
 version: '3'
 services:
-  ffmpeg:
-    image: jrottenberg/ffmpeg:4.1-ubuntu
+  liquidsoap:
+    image: savonet/liquidsoap:v2.1.2
+    entrypoint: [ "/entrypoint.liq" ]
     restart: always
-    container_name: ffmpeg
-    entrypoint: [ "bash", "/entrypoint.ffmpeg.sh" ]
+    container_name: liquidsoap
     depends_on:
-    - icecast
-    environment:
-      YT_TOKEN: {{ YT_TOKEN }}
-      RADIO_URL: {{ RADIO_URL }}
-      VBR: {{ VBR }}
-      FPS: {{ FPS }}
-      QUAL: {{ QUAL }}
-      CRF: {{ CRF }}
-      VIDEO_SOURCE: {{ VIDEO_SOURCE }}
-      fontcolor: {{ fontcolor }}
-      fontsize: {{ fontsize }}
-      boxcolor: {{ boxcolor }}
-      boxborderw: {{ boxborderw }}
-      FFMPEG_X: {{ FFMPEG_X }}
-      FFMPEG_Y: {{ FFMPEG_Y }}
+      icecast:
+        condition: service_started
+      mpd:
+        condition: service_started
+{% if aws == "true" %}
+      aws:
+        condition: service_completed_successfully
+{% endif %}
     volumes:
-    - /root/video:/video
-    - /root/music:/data
-    - ./entrypoint.ffmpeg.sh:/entrypoint.ffmpeg.sh
+    - ~/radio_runtime:/data
+    - ~/radio_runtime/entrypoint.liq:/entrypoint.liq
     networks:
     - radio-net
 
@@ -41,14 +33,38 @@ services:
     container_name: mpd
     entrypoint: [ "sh", "/entrypoint.mpd.sh" ]
     depends_on:
-    - icecast
+      icecast:
+        condition: service_started
+{% if aws == "true" %}
+      aws:
+        condition: service_completed_successfully
+{% endif %}
     volumes:
-    - /root/music:/var/lib/mpd/music
+    - ~/radio_runtime/music:/var/lib/mpd/music
     - mpd_playlists:/var/lib/mpd/playlists
     - mpd_database:/var/lib/mpd/database
-    - ./entrypoint.mpd.sh:/entrypoint.mpd.sh
+    - ~/radio_runtime/entrypoint.mpd.sh:/entrypoint.mpd.sh
     networks:
     - radio-net
+
+{% if aws == "true" %}
+  aws:
+    image: amazon/aws-cli:latest
+    entrypoint: [ "bash", "/entrypoint.aws.sh" ]
+    restart: on-failure
+    container_name: aws
+    environment:
+      AWS_ENDPOINT: "{{ AWS_ENDPOINT }}"
+      AWS_DEFAULT_REGION: "{{ AWS_DEFAULT_REGION }}"
+      AWS_ACCESS_KEY_ID: "{{ AWS_ACCESS_KEY_ID }}"
+      AWS_SECRET_ACCESS_KEY: "{{ AWS_SECRET_ACCESS_KEY }}"
+      BUCKET: "{{ BUCKET }}"
+    volumes:
+    - ~/radio_runtime:/aws/data
+    - ~/radio_runtime/entrypoint.aws.sh:/entrypoint.aws.sh
+    networks:
+    - radio-net
+{% endif %}
 
 volumes:
   mpd_playlists: {}

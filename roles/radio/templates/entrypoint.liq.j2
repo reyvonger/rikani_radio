@@ -1,0 +1,39 @@
+#!/usr/bin/liquidsoap
+log.file.path.set("/tmp/basic-radio.log")
+settings.log.stdout.set(true)
+settings.tag.encodings.set(["UTF-8", "ISO-8859-1"])
+video.frame.height.set(1080)
+video.frame.width.set(1920)
+
+source_audio = input.http("{{ RADIO_URL }}")
+source_video = single("/data/{{ VIDEO_SOURCE }}")
+source_mux = mux_video(video=source_video,source_audio)
+
+{% if track_output == "true" %}
+srightnow = ref("")
+def update_time()
+    srightnow := process.read("cat /data/music/track.txt")
+end
+thread.run(every=1.,update_time)
+def gettime() = !srightnow end
+
+stream = video.add_text(font="/data/font.ttf", size=36, y=0, gettime, source_mux)
+stream = video.resize(height=1080, width=1920, stream)
+
+{% else %}
+stream = video.resize(height=1080, width=1920, source_mux)
+{% endif %}
+
+stream = ffmpeg.encode.audio_video(
+    %ffmpeg(
+        %audio(codec="aac", b="128k", flags="+global_header"),
+        %video(codec="libx264", b="8000k", flags="+global_header")
+    ),
+    stream
+)
+flv = %ffmpeg(
+    format="flv",
+    %audio.copy,
+    %video.copy,
+)
+output.youtube.live.rtmp(encoder=flv, fallible=true, key="{{ YT_TOKEN }}", stream)

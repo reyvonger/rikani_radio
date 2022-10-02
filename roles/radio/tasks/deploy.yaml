@@ -1,47 +1,33 @@
 ---
 - name: Creates deploy dir
   file:
-    path: /srv/deploy
+    path: ~/radio_runtime
     state: directory
 
 - name: check music.sha256
   stat:
-    path: /root/video/music.sha256
+    path: ~/radio_runtime/music.sha256
   register: music
 
 - name: create music.sha256
   file:
-    path: /root/music.sha256
+    path: ~/radio_runtime/music.sha256
     state: touch
     owner: root
     group: root
     mode: 0755
   when: not music.stat.exists
 
-- name: Create a music link
-  ansible.builtin.file:
-    src: /home/{{ user }}/music
-    dest: /root/music
-    state: link
-  when: user != 'root'
-
-- name: Create a video link
-  ansible.builtin.file:
-    src: /home/{{ user }}/video
-    dest: /root/video
-    state: link
-  when: user != 'root'
-
 - name: new video source
   stat:
-    path: /root/video/video.mp4
+    path: ~/radio_runtime/video.mp4
   register: video
 
 - name: move video
-  shell: mv /root/video/video.mp4 /root/video/play.mp4
+  shell: mv ~/radio_runtime/video.mp4 ~/radio_runtime/play.mp4
   when: video.stat.exists
   notify:
-  - restart ffmpeg
+  - restart liquidsoap
 
 - name: create mpc alias
   blockinfile:
@@ -52,7 +38,7 @@
 
 - name: Use sha256 to calculate checksum
   ansible.builtin.stat:
-    path: /root/music/
+    path: ~/radio_runtime/music/
     checksum_algorithm: sha256
   register: music_dir_ls
 
@@ -62,37 +48,45 @@
 
 - name: read music.sha256
   slurp:
-    src: /root/music.sha256
+    src: ~/radio_runtime/music.sha256
   register: slurped_user_data
 
 - name: Decode music.sha256 #(hack)
   set_fact:
     old_music_dir_sha256: "{{ slurped_user_data.content | b64decode }}"
 
-- name: template ffmpeg entrypoint.sh
+- name: template aws
   template:
-    src: entrypoint.ffmpeg.sh.j2
-    dest: /srv/deploy/entrypoint.ffmpeg.sh
+    src: entrypoint.aws.sh.j2
+    dest: ~/radio_runtime/entrypoint.aws.sh
+    owner: root
+    group: root
+    mode: 0755
+
+- name: template liquidsoap
+  template:
+    src: entrypoint.liq.j2
+    dest: ~/radio_runtime/entrypoint.liq
     owner: root
     group: root
     mode: 0755
   notify:
-  - restart ffmpeg
+  - restart liquidsoap
 
 - name: template mpd entrypoint.sh
   template:
     src: entrypoint.mpd.sh.j2
-    dest: /srv/deploy/entrypoint.mpd.sh
+    dest: ~/radio_runtime/entrypoint.mpd.sh
     owner: root
     group: root
     mode: 0755
   notify:
-  - restart ffmpeg
+  - restart liquidsoap
 
 - name: copy font
   copy:
     src: font.ttf
-    dest: /root/video/font.ttf
+    dest: ~/radio_runtime/font.ttf
     owner: root
     group: root
     mode: 0755
@@ -100,14 +94,14 @@
 - name: template docker
   template: 
     src: "docker-compose.yaml.j2" 
-    dest: /srv/deploy/docker-compose.yaml
+    dest: ~/radio_runtime/docker-compose.yaml
     owner: root 
     group: root 
     mode: 0644
 
 - name: deploy
   docker_compose:
-    project_src: /srv/deploy/
+    project_src: ~/radio_runtime/
     state: present
     remove_orphans: yes
    
@@ -115,10 +109,10 @@
   shell: docker restart mpd
   when: old_music_dir_sha256 != music_dir_sha256
   notify:
-  - restart ffmpeg
+  - restart liquidsoap
 
 - name: new sha256 output
   local_action: 
     module: copy 
     content: "{{ music_dir_sha256 }}"
-    dest: /root/music.sha256
+    dest: ~/radio_runtime/music.sha256
