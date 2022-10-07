@@ -27,10 +27,6 @@ spec:
       labels:
         app: {{ $.Release.Name }}-radio
     spec:
-      securityContext:
-        #runAsUser: 33
-        #runAsGroup: 33
-        fsGroup: 33
       hostAliases:
       - ip: 127.0.0.1
         hostnames:
@@ -73,7 +69,7 @@ spec:
           periodSeconds: 10
         volumeMounts:
         - name: data
-          mountPath: /var/lib/mpd/music
+          mountPath: /var/lib/mpd/music/
         - name: entrypoint-mpd
           mountPath: /entrypoint
           subPath: entrypoint.mpd
