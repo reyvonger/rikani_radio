@@ -8,7 +8,7 @@ auth:
 config:
   env:
     RADIO_URL: "http://icecast:8000/mpd"
-    VBR: "4000k"
+    VBR: "4500k"
     VIDEO_SOURCE: "video.mp4"
     FONTSIZE: "48"
   secrets:
