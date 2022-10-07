@@ -8,7 +8,7 @@ auth:
 config:
   env:
     RADIO_URL: "http://icecast:8000/mpd"
-    VBR: "4500k"
+    VBR: "4000k"
     VIDEO_SOURCE: "video.mp4"
     FONTSIZE: "48"
   secrets:
@@ -26,9 +26,7 @@ aws:
     echo "aws_access_key_id = ${AWS_ACCESS_KEY_ID}" >> /aws/credentials
     echo "aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}" >> /aws/credentials
     aws --endpoint-url="$AWS_ENDPOINT" s3 cp s3://${BUCKET}/ /aws/data/ --recursive
-    # mv /aws/data/**/*.mp3 /aws/data/music/
-    cd /aws/data/music/
-    # chmod 777 -R /aws/data/music/
+    mv /aws/data/**/*.mp3 /aws/data/
 
 mpd:
   entrypoint: |
@@ -67,7 +65,7 @@ liquidsoap:
 
     srightnow = ref("")
     def update_time()
-        srightnow := process.read("cat /data/music/track.txt")
+        srightnow := process.read("cat /data/track.txt")
     end
     thread.run(every=1.,update_time)
     def gettime() = !srightnow end
@@ -77,7 +75,7 @@ liquidsoap:
 
     stream = ffmpeg.encode.audio_video(
         %ffmpeg(
-            %audio(codec="aac", b="128k", flags="+global_header"),
+            %audio(codec="aac", b="256k", flags="+global_header"),
             %video(codec="libx264", b="{{ .Values.config.env.VBR }}", flags="+global_header")
         ),
         stream
